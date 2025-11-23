@@ -28,9 +28,15 @@ def get_last_visitor():
 def add_visitor(visitor_name):
     last_entry = get_last_visitor()
     
-    # 1. Check for Duplicates (Consecutive)
+    # Check for Duplicates
     if last_entry and last_entry[0] == visitor_name:
         raise DuplicateVisitorError(f"{visitor_name} was the last visitor.")
+    
+    # Check for 5-Minute Wait Time
+    if last_entry:
+        last_time = datetime.fromisoformat(last_entry[1])
+        if datetime.now() - last_time < timedelta(minutes=5):
+            raise EarlyEntryError("Must wait 5 minutes between visitors.")
 
     # Write to file
     timestamp = datetime.now().isoformat()
